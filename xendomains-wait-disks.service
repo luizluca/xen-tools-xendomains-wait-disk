@@ -1,0 +1,16 @@
+[Unit]
+Description=Xendomains - for those machines that will start, wait for their disks to apear
+Requires=proc-xen.mount xenstored.service
+After=proc-xen.mount xenstored.service xenconsoled.service xen-init-dom0.service
+After=network-online.target
+After=remote-fs.target
+Before=xendomains.service
+ConditionPathExists=/proc/xen/capabilities
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/xen-tools-xendomains-wait-disk/bin/xendomains-wait-disks
+TimeoutSec=5min
+
+[Install]
+WantedBy=xendomains.service
