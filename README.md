@@ -14,9 +14,9 @@ There are two known cases where this project is useful:
 ## degraded mdadm RAID
 
 mdadm RAID are assembled by [udev rules](https://github.com/neilbrown/mdadm/blob/master/udev-md-raid-assembly.rules). 
-However, it is only assembled when it is healthy. When not healthy, it starts a [timer](https://github.com/neilbrown/mdadm/blob/master/systemd/mdadm-last-resort%40.timer) that will try to assemble the RAID anyway after 30s. If a domU is depending on a degraded MD RAID (i.e. RAID 1 missing one disk), xendomains.service will be started before those 30s passed, failing that domU.
+However, it is only assembled when it is healthy. When a member is still missing, it starts a [timer](https://github.com/neilbrown/mdadm/blob/master/systemd/mdadm-last-resort%40.timer) that will try to assemble the RAID anyway after 30s, even if degraded. This timer does not block xendomains to be started. So, if a domU is depending on a MD RAID that is degraded (i.e. RAID 1 missing one disk), xendomains.service will be started before those 30s passed and that domU will fail.
 
-An alternative solution would be to add extra hard dependencies to xendomains.service for each required disk (Require=xxx.device). However, this solution introduces another greater problem. Before, if a single RAID is degraded, only the domU that depends on it will fail. With Require=xxx.device, xendomains will never start if
+An alternative solution would be to add extra hard dependencies to xendomains.service for each required disk (Require=xxx.device). However, this solution introduces another bigger problem. Before, if a single RAID is degraded, only the domU that depends on it will fail. With Require=xxx.device, xendomains will never start if
 a RAID could not be assembled even after 30s (i.e. RAID5 with two missing disks).
 
 With xendomains-wait-disk.service, xendomains.service will be blocked up to 5 min waiting for those MD RAID used by domUs. If it fails, xendomains.service
@@ -29,17 +29,19 @@ iscsi disks. As in mdadm RAID case, xendomains.service is started and domU that 
 
 ## Installation
 
+Some paths are hard-coded in xendomains-wait-disk.sh and xendomains-wait-disk.service. They were tested with
+OpenSUSE/SLE. They might also work with other distributions as-is but it could need minor path adaptations.
 
 ### Manually
 
- Copy xendomains-wait-disk to /usr/lib/xen-tools-xendomains-wait-disk/bin/xendomains-wait-disks
+ Copy xendomains-wait-disk.sh to /usr/lib/xen-tools-xendomains-wait-disk/bin/xendomains-wait-disks
 
  Copy xendomains-wait-disk.service to systemd/system folder and enable it
 
- Relaod systemd daemon (systemctl daemon-reload)
+ Reload systemd daemon (systemctl daemon-reload)
 
  Enable xendomains-wait-disk.service (systemctl enable xendomains-wait-disk.service)
 
 ### Package
 
- Build xen-tools-xendomains-wait-disk.rpm from spec file and install
+ Build xen-tools-xendomains-wait-disk.rpm from spec file and install (tested for xendomains-wait-disks.sh)
