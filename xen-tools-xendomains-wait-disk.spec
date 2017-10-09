@@ -21,7 +21,7 @@ Release:        0
 Summary:        Adds a new xendomains-wait-disks.service
 License:        GPL-3.0+
 Group:          System/Kernel
-URL:            http://repositorio.tre-sc.gov.br/suse/tresc/
+URL:            https://github.com/luizluca/xen-tools-xendomains-wait-disk
 Source1:        %{wait_disk_servicename}.sh
 Source2:        %{wait_disk_service}
 Source10:	README.md
