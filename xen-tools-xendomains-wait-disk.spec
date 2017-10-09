@@ -24,6 +24,8 @@ Group:          System/Kernel
 URL:            http://repositorio.tre-sc.gov.br/suse/tresc/
 Source1:        %{wait_disk_servicename}.sh
 Source2:        %{wait_disk_service}
+Source10:	README.md
+Source11:	LICENSE
 BuildRequires:  bash
 BuildRequires:  xen-tools
 Requires:       xen-tools
@@ -53,6 +55,7 @@ install -D -m 644 %{S:1} %{buildroot}%{_libexecdir}/%{name}/bin/%{wait_disk_serv
 install -D -m 644 %{S:2} %{buildroot}%{_unitdir}/%{wait_disk_service}
 mkdir -p %{buildroot}%{_sbindir}
 ln -s /usr/sbin/service %{buildroot}%{_sbindir}/rc%{wait_disk_servicename}
+cp %{S:10} %{S:11} %{_builddir}
 
 %pre
 %service_add_pre %{wait_disk_service}
@@ -67,7 +70,7 @@ systemctl enable %{wait_disk_service}
 %postun
 %service_del_postun %{wait_disk_service}
 if [ "$1" -eq 0 ]; then
-	systemctl disable %{wait_disk_service}
+	systemctl disable %{wait_disk_service} || :
 fi
 
 %files
@@ -76,5 +79,6 @@ fi
 %attr(755,root,root) %{_libexecdir}/%{name}/bin/%{wait_disk_servicename}
 %{_unitdir}/%{wait_disk_service}
 %{_sbindir}/rc%{wait_disk_servicename}
+%doc README.md LICENSE
 
 %changelog

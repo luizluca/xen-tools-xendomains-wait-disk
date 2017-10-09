@@ -22,7 +22,7 @@ a RAID could not be assembled even after 30s (i.e. RAID5 with two missing disks)
 With xendomains-wait-disk.service, xendomains.service will be blocked up to 5 min waiting for those MD RAID used by domUs. If it fails, xendomains.service
 continues anyway.
 
-## ISCSI disks
+## iSCSI disks
 
 domU that uses iSCSI disk (mapped by host OS) also fails to start during boot. open-iscsi.service returns before it connect to the remote target and rescan
 iscsi disks. As in mdadm RAID case, xendomains.service is started and domU that depends on iSCSI disks will fail.
