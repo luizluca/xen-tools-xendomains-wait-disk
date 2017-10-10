@@ -14,7 +14,6 @@
 
 %define wait_disk_servicename	xendomains-wait-disks
 %define wait_disk_service	%{wait_disk_servicename}.service
-
 Name:           xen-tools-xendomains-wait-disk
 Version:        1.0
 Release:        0
@@ -24,15 +23,15 @@ Group:          System/Kernel
 URL:            https://github.com/luizluca/xen-tools-xendomains-wait-disk
 Source1:        %{wait_disk_servicename}.sh
 Source2:        %{wait_disk_service}
-Source10:	README.md
-Source11:	LICENSE
+Source10:       README.md
+Source11:       LICENSE
 BuildRequires:  bash
+BuildRequires:  systemd-rpm-macros
 BuildRequires:  xen-tools
 Requires:       xen-tools
-BuildRequires: systemd-rpm-macros
-%{?systemd_requires}
-BuildArch:      noarch
 Supplements:    packageand(xen-tools:xen-tools-xendomains-wait-disk)
+BuildArch:      noarch
+%{?systemd_requires}
 
 %description
 This package adds a new service named xendomains-wait-disk.service,
@@ -51,11 +50,11 @@ If xendomains-wait-disk.service fails, xendomains.service is launched anyway.
 
 %install
 mkdir -p %{buildroot}%{_libexecdir}/%{name}/bin
-install -D -m 644 %{S:1} %{buildroot}%{_libexecdir}/%{name}/bin/%{wait_disk_servicename}
-install -D -m 644 %{S:2} %{buildroot}%{_unitdir}/%{wait_disk_service}
+install -D -m 644 %{SOURCE1} %{buildroot}%{_libexecdir}/%{name}/bin/%{wait_disk_servicename}
+install -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/%{wait_disk_service}
 mkdir -p %{buildroot}%{_sbindir}
-ln -s /usr/sbin/service %{buildroot}%{_sbindir}/rc%{wait_disk_servicename}
-cp %{S:10} %{S:11} %{_builddir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{wait_disk_servicename}
+cp %{SOURCE10} %{SOURCE11} %{_builddir}
 
 %pre
 %service_add_pre %{wait_disk_service}
@@ -74,7 +73,6 @@ if [ "$1" -eq 0 ]; then
 fi
 
 %files
-%defattr(-,root,root)
 %{_libexecdir}/%{name}
 %attr(755,root,root) %{_libexecdir}/%{name}/bin/%{wait_disk_servicename}
 %{_unitdir}/%{wait_disk_service}
