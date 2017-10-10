@@ -73,6 +73,7 @@ if [ "$1" -eq 0 ]; then
 fi
 
 %files
+%defattr(-,root,root)
 %{_libexecdir}/%{name}
 %attr(755,root,root) %{_libexecdir}/%{name}/bin/%{wait_disk_servicename}
 %{_unitdir}/%{wait_disk_service}
